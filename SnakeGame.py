@@ -5,11 +5,12 @@ import time
 
 class SnakeBody():
     def __init__(self,x,y) -> None:
-        self.width = 5
+        self.width = 10
         self.position = (x,y)
 
     def draw(self,surface,color):
-        pygame.draw.circle(surface,color,self.position,self.width)
+        pygame.draw.rect(surface,color,pygame.Rect(self.position[0]-5,self.position[1]-5,self.width,self.width))
+        #pygame.draw.circle(surface,color,self.position,self.width)
 
 class Snake:
     color = "green"
@@ -47,6 +48,14 @@ class Snake:
                     tmp[1] +=10
                 self.body[0].position = tuple(tmp)
 
+    def check_collision(self):
+        head = list(self.body[0].position)
+        for body in self.body[1:]:
+            body_position = body.position
+            if ((head[0] <= body_position[0] + 5 and head[0] >= body_position[0]-5) 
+                and (head[1] <= body_position[1] + 5 and head[1] >= body_position[1]-5)):
+                return True
+ 
 class Board:
     def __init__(self,snake) -> None:
         self.score = 1
@@ -174,6 +183,15 @@ while running:
     # flip() the display to put your work on screen
     pygame.display.flip()
     time.sleep(sleep)
+
+
+    if board.snake.check_collision() is True:
+        board.screen.fill("black")
+        score_text = font.render("You LOST!!!", True, (255,255,255), None)
+        board.draw_text_end(score_text)
+        pygame.display.flip()
+        time.sleep(2)
+        break
 
     if board.checkLost() is True:
         board.screen.fill("black")
